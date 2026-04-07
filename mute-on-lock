@@ -17,11 +17,14 @@ class ScreenLockObserver {
     }
 
     private func mute() {
-        let task = Process()
-        task.launchPath = "/usr/bin/osascript"
-        task.arguments = ["-e", "set volume output muted true"]
-        task.launch()
-        task.waitUntilExit()
+        var error: NSDictionary?
+        if let scriptObject = NSAppleScript(source: "set volume output muted true") {
+            if let output = scriptObject.executeAndReturnError(&error).stringValue {
+                NSLog(output)
+            } else if (error != nil) {
+                NSLog("Error: ", error!)
+            }
+        }
     }
 }
 
