@@ -6,25 +6,20 @@ class ScreenLockObserver {
     init() {
         let dnc = DistributedNotificationCenter.default()
 
-        // listen for screen lock
         let _ = dnc.addObserver(forName: NSNotification.Name("com.apple.screenIsLocked"), object: nil, queue: .main) { _ in
             NSLog("Screen Locked")
-            self.runBashScript(path: "~/bin/logout.sh")
+            self.mute()
         }
 
-        // listen for screen unlock
-        let _ = dnc.addObserver(forName: NSNotification.Name("com.apple.screenIsUnlocked"), object: nil, queue: .main) { _ in
-            NSLog("Screen Unlocked")
-            self.runBashScript(path: "~/bin/login.sh")
-        }
+        self.mute()
 
         RunLoop.main.run()
     }
 
-    private func runBashScript(path: String) {
+    private func mute() {
         let task = Process()
-        task.launchPath = "/bin/bash"
-        task.arguments = ["-c", path]
+        task.launchPath = "/usr/bin/osascript"
+        task.arguments = ["-e", "set volume output muted true"]
         task.launch()
         task.waitUntilExit()
     }
